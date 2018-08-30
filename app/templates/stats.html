@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div style="width: 75%">
+        <canvas id="canvas"></canvas>
+</div>
+
+<script>
+// define the chart colours
+window.chartColors = {
+	klimmen:        '#ECDFFD',      //purple
+    boulderen:      '#ECDFFD',      //purple
+    Run:            '#D0F8C1',      //green
+	Ride:           '#D0F8C1',      //green
+    kracht:         '#FED2DF',      //red
+	hangboard:      '#FED2DF',      //red
+    AlpineSki:      '#CFEFFC',      //blue
+    BackcountrySki: '#CFEFFC',      //blue
+    RollerSki:      '#CFEFFC',      //blue
+    ijsklimmen:     '#CFEFFC',      //blue
+	Rowing:         '#EDEDED'       //gray
+};
+
+
+// define the chart data
+var chartData = {
+    labels: [
+            {% for week in data['weeks']: %}
+            {{week}},
+            {% endfor %}
+            ],
+    datasets: [
+            {% for sport, counts in data['counts'].items(): %}
+            {
+            label: '{{sport}}',
+            data: {{counts}},
+            backgroundColor: window.chartColors.{{sport}}
+            },
+            {% endfor %}
+            ]
+};
+
+
+// define the chart options
+var chartOptions = {
+                title:{
+                    display:true,
+                    text:"training sessions in the last {{num_weeks}} weeks"
+                      },
+                tooltips: {
+                    mode: 'index',
+                    intersect: true,
+                    filter: function (tooltipItem) {
+                        return tooltipItem.yLabel !== 0},
+                    },
+                scales: {
+                    xAxes: [{
+                        stacked: true
+                            }],
+                    yAxes: [{
+                        stacked: true
+                            }]
+                        }
+};
+
+// get chart canvas
+var ctx = document.getElementById("canvas").getContext('2d');
+
+
+// create the chart using the chart canvas
+var myChart = new Chart(ctx, {
+  type: 'bar',
+  data: chartData,
+  options: chartOptions
+});
+
+</script>
+{% endblock %}
